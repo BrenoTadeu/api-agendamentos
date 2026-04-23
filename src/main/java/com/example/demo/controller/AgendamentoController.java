@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,10 +9,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.demo.DTO.AgendamentoRequest;
 import com.example.demo.DTO.AgendamentoResponse;
+import com.example.demo.DTO.HorariosDisponiveis;
 import com.example.demo.service.AgendamentoService;
 
 @RestController
@@ -29,6 +32,11 @@ public class AgendamentoController {
     @GetMapping("/listar")
     public List<AgendamentoResponse> listarAgendamentos(){
         return service.listarAgendamentos();
+    }
+
+    @GetMapping("/listar/disponiveis")
+    public List<HorariosDisponiveis> listarAgendamentoDisponivel(@RequestParam("data") LocalDate data){
+        return service.listarAgendamentoDisponivel(data);
     }
 
     @GetMapping("/{id}")

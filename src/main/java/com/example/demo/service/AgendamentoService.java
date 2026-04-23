@@ -1,18 +1,20 @@
 package com.example.demo.service;
 
-/*import java.text.spi.DateFormatProvider;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;*/
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.example.demo.DTO.AgendamentoRequest;
 import com.example.demo.DTO.AgendamentoResponse;
+import com.example.demo.DTO.HorariosDisponiveis;
 import com.example.demo.model.Agendamento;
 import com.example.demo.repository.AgendamentoRepository;
 
@@ -55,21 +57,37 @@ public class AgendamentoService {
                 .map(this::toDTO).toList();
     }
 
-  /*   public List<AgendamentoResponse> listarAgendamentoMarcado(LocalDate date){
-        List<LocalDatetime> horarios = new ArrayList<>();
-        LocalDateTime inicio = LocalDateTime.of(date, 9)
-        LocalDateTime termino = LocalDateTime.of(21,0);
+public List<HorariosDisponiveis> listarAgendamentoDisponivel(LocalDate date){
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
-        for(LocalTime hora = inicio; !hora.isAfter(termino); hora = hora.plusMinutes(30)){
-            horarios.add(hora.format(formatter));
+    List<HorariosDisponiveis> disponiveis = new ArrayList<>();
+
+
+    LocalDateTime inicioDia = date.atStartOfDay();
+    LocalDateTime fimDia = date.atTime(23,59,59);
+
+    List<Agendamento> agendamentos = repository.findByDataHoraBetween(inicioDia, fimDia);
+
+    Set<LocalTime> horariosOcupados = agendamentos.stream()
+        .map(a -> a.getDataHora().toLocalTime())
+        .collect(Collectors.toSet());
+
+    LocalTime inicio = LocalTime.of(9, 0);
+    LocalTime termino = LocalTime.of(21, 0);
+
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+
+    for(LocalTime hora = inicio; !hora.isAfter(termino); hora = hora.plusMinutes(30)){
+
+        System.out.println(hora);
+        System.out.println(horariosOcupados); 
+
+        if(!horariosOcupados.contains(hora)){
+            disponiveis.add(new HorariosDisponiveis(hora.format(formatter)));
         }
+    }
 
-        String[] arrayHorarios = horarios.toArray(new String[0]);
-        Set<LocalDateTime> horariosOcupados = repository.find
-
-        return
-    }*/
+    return disponiveis;
+}
 
     public AgendamentoResponse listarPorId(Long id) {
         if (id == null) {
